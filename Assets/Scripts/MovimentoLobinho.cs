@@ -45,21 +45,41 @@ public class MovimentoLobinho : MonoBehaviour
                 controlePersonagem.Move(mover.normalized * speed * Time.deltaTime);
             }
 
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                speed = 10f;
-            }
-            if (Input.GetKeyUp(KeyCode.LeftShift))
-            {
-                speed = 4f;
-            }
+            
+            
+            //if (Input.GetKeyUp(KeyCode.LeftShift))
+            //{
+            //    speed = 4f;
+            //}
+
             if (NoChao())
             {
-                animacao.SetBool("Pular", false);
-                if (Input.GetButtonDown("Jump"))
-                {
+                if (Input.GetButtonDown("Jump")) {
+                    animacao.SetTrigger("Pulando");
                     pular.y = Mathf.Sqrt(pularAltura * -2f * gravidade);
                 }
+                if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.W)) { // correndo pra frente
+                    speed = 10f;
+                    animacao.SetBool("Andando", false);
+                    animacao.SetBool("Correndo", true);
+                } else {
+                    animacao.SetBool("Correndo", false);
+
+                    if (Input.GetKey(KeyCode.W)) // andando pra frente
+                    {
+                        speed = 4f;
+                        animacao.SetBool("Andando", true);
+
+                    } else {
+
+                        animacao.SetBool("Andando", false);
+                    }
+                }
+                
+
+                //animacao.SetBool("Pular", false);
+                //if (Input.GetButtonDown("Jump"))
+                
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     animacao.SetTrigger("Atacar");
@@ -68,11 +88,12 @@ public class MovimentoLobinho : MonoBehaviour
                 {
                     animacao.SetBool("Uivar", true);
                 }
-            }
-            if (!NoChao())
-            {
-                animacao.SetBool("Pular", true);
-            }
+            } 
+            
+            //if (!NoChao())
+            //{
+            //    animacao.SetBool("Pular", true);
+            //}
             animacao.SetFloat("Velocidade", controlePersonagem.velocity.magnitude);
             pular.y += gravidade * Time.deltaTime;
             controlePersonagem.Move(pular * Time.deltaTime);

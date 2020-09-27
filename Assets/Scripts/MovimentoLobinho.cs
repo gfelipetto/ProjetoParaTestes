@@ -27,60 +27,65 @@ public class MovimentoLobinho : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direcao = new Vector3(horizontal, 0f, vertical).normalized;
-        if (!NoChao() && pular.y < 0)
+        if (animacao.GetBool("Uivar") == false)
         {
-            pular.y = 1.5f;
-        }
-        if (direcao.magnitude >= 0.1f)
-        {
-            float pontoAngulo = Mathf.Atan2(direcao.x, direcao.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-            float angulo = Mathf.SmoothDampAngle(transform.eulerAngles.y, pontoAngulo, ref suavizarVelocidade, suavizar);
-            transform.rotation = Quaternion.Euler(0f, angulo, 0f);
-            Vector3 mover = Quaternion.Euler(0f, pontoAngulo, 0f) * Vector3.forward;
-            controlePersonagem.Move(mover.normalized * speed * Time.deltaTime);
-        }
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+            Vector3 direcao = new Vector3(horizontal, 0f, vertical).normalized;
+            if (!NoChao() && pular.y < 0)
+            {
+                pular.y = 1.5f;
+            }
+            if (direcao.magnitude >= 0.1f)
+            {
+                float pontoAngulo = Mathf.Atan2(direcao.x, direcao.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+                float angulo = Mathf.SmoothDampAngle(transform.eulerAngles.y, pontoAngulo, ref suavizarVelocidade, suavizar);
+                transform.rotation = Quaternion.Euler(0f, angulo, 0f);
+                Vector3 mover = Quaternion.Euler(0f, pontoAngulo, 0f) * Vector3.forward;
+                controlePersonagem.Move(mover.normalized * speed * Time.deltaTime);
+            }
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            speed = 10f;
-        }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            speed = 4f;
-        }
-        if (NoChao())
-        {
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                pular.y = Mathf.Sqrt(pularAltura * -2f * gravidade);
+                speed = 10f;
             }
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.GetKeyUp(KeyCode.LeftShift))
             {
-                animacao.SetTrigger("Atacar");
+                speed = 4f;
             }
-            if (Input.GetKey(KeyCode.Q))
+            if (NoChao())
             {
-
+                animacao.SetBool("Pular", false);
+                if (Input.GetButtonDown("Jump"))
+                {
+                    pular.y = Mathf.Sqrt(pularAltura * -2f * gravidade);
+                }
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    animacao.SetTrigger("Atacar");
+                }
+                if (Input.GetKey(KeyCode.Q))
+                {
+                    animacao.SetBool("Uivar", true);
+                }
             }
-        }
-        animacao.SetFloat("Velocidade", controlePersonagem.velocity.magnitude);
-        pular.y += gravidade * Time.deltaTime;
-        controlePersonagem.Move(pular * Time.deltaTime);
-        if (NoChao())
-        {
-            animacao.SetBool("Pular", false) ;
-        }
-        if (!NoChao())
-        {
-            animacao.SetBool("Pular", true);
+            if (!NoChao())
+            {
+                animacao.SetBool("Pular", true);
+            }
+            animacao.SetFloat("Velocidade", controlePersonagem.velocity.magnitude);
+            pular.y += gravidade * Time.deltaTime;
+            controlePersonagem.Move(pular * Time.deltaTime);
         }
     }
 
     private bool NoChao()
     {
         return Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+    }
+
+    private void TerminarUivo()
+    {
+        animacao.SetBool("Uivar", false);
     }
 }
